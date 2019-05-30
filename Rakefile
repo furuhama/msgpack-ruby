@@ -25,35 +25,18 @@ end
 
 spec = eval File.read("msgpack.gemspec")
 
-if RUBY_PLATFORM =~ /java/
-  require 'rake/javaextensiontask'
+require 'rake/extensiontask'
 
-  Rake::JavaExtensionTask.new('msgpack', spec) do |ext|
-    ext.ext_dir = 'ext/java'
-    jruby_home = RbConfig::CONFIG['prefix']
-    jars = ["#{jruby_home}/lib/jruby.jar"]
-    ext.classpath = jars.map { |x| File.expand_path(x) }.join(':')
-    ext.lib_dir = File.join(*['lib', 'msgpack', ENV['FAT_DIR']].compact)
-    ext.source_version = '1.6'
-    ext.target_version = '1.6'
-  end
-else
-  require 'rake/extensiontask'
-
-  Rake::ExtensionTask.new('msgpack', spec) do |ext|
-    ext.ext_dir = 'ext/msgpack'
-    ext.cross_compile = true
-    ext.lib_dir = File.join(*['lib', 'msgpack', ENV['FAT_DIR']].compact)
-    # cross_platform names are of MRI's platform name
-    ext.cross_platform = ['x86-mingw32', 'x64-mingw32']
-  end
+Rake::ExtensionTask.new('msgpack', spec) do |ext|
+  ext.ext_dir = 'ext/msgpack'
+  ext.cross_compile = true
+  ext.lib_dir = File.join(*['lib', 'msgpack', ENV['FAT_DIR']].compact)
+  # cross_platform names are of MRI's platform name
+  ext.cross_platform = ['x86-mingw32', 'x64-mingw32']
 end
 
-test_pattern = case
-               when RUBY_PLATFORM =~ /java/ then 'spec/{,jruby/}*_spec.rb'
-               when RUBY_ENGINE =~ /rbx/ then 'spec/*_spec.rb'
-               else 'spec/{,cruby/}*_spec.rb' # MRI
-               end
+test_pattern = 'spec/{,cruby/}*_spec.rb' # MRI
+
 RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = ["-c", "-f progress"]
   t.rspec_opts << "-Ilib"

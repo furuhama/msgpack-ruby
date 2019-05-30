@@ -12,22 +12,15 @@ Gem::Specification.new do |s|
   s.homepage = "http://msgpack.org/"
   s.rubyforge_project = "msgpack"
   s.require_paths = ["lib"]
-  if /java/ =~ RUBY_PLATFORM
-    s.files = Dir['lib/**/*.rb', 'lib/**/*.jar']
-    s.platform = Gem::Platform.new('java')
-  else
-    s.files = `git ls-files`.split("\n")
-    s.extensions = ["ext/msgpack/extconf.rb"]
-  end
+  s.files = `git ls-files`.split("\n")
+  s.extensions = ["ext/msgpack/extconf.rb"]
   s.test_files = `git ls-files -- {test,spec}/*`.split("\n")
 
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rake-compiler', ['~> 1.0']
-  if /java/ !~ RUBY_PLATFORM
-    # NOTE: rake-compiler-dock SHOULD be updated for new Ruby versions
-    s.add_development_dependency 'rake-compiler-dock', ['~> 0.7.0']
-  end
+  # NOTE: rake-compiler-dock SHOULD be updated for new Ruby versions
+  s.add_development_dependency 'rake-compiler-dock', ['~> 0.7.0']
   s.add_development_dependency 'rspec', ['~> 3.3']
   s.add_development_dependency 'yard'
   s.add_development_dependency 'json'
